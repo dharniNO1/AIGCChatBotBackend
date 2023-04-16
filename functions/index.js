@@ -2,11 +2,13 @@ const express = require("express");
 const { Configuration, OpenAIApi } = require("openai");
 const cors = require("cors");
 const { performance } = require("perf_hooks");
-const { chatModes, accountConfigs } = require("./functions/configs/configs");
-const prompts = require("./functions/prompts/prompts");
+const { chatModes, accountConfigs } = require("./configs/configs");
+const prompts = require("./prompts/prompts");
 
+const functions = require("firebase-functions");
 const app = express();
-app.use(cors());
+
+app.use(cors({ origin: true }));
 app.use(express.json());
 
 const configuration = new Configuration({
@@ -107,6 +109,4 @@ app.get("/api/chat-modes", (req, res) => {
 app.get("/api/accountConfigs", (req, res) => {
   res.status(200).json(accountConfigs);
 });
-
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+exports.app = functions.https.onRequest(app);
