@@ -4,7 +4,9 @@ class Prompts {
       console.log("logging para");
       console.log(params);
       switch (id) {
-        case 1: // 周报
+        case 1: // 产品经理（PRD文档）
+          return "我的需求是：" + params.userInput;
+        case 2: // 周报
           const { currentWeekContent, nextWeekPlan } = params;
           return (
             "我这周完成了" +
@@ -15,21 +17,31 @@ class Prompts {
               : "我下周计划是" + nextWeekPlan + "。") +
             "请你帮我写一份周总结，扩充一下，谢谢！"
           );
-        case 2: // 小红书
+        case 3: // 小红书
           return "我要写的文案是" + params.userInput;
-        case 3: // 周公解梦
+        case 4: // 周公解梦
           return "我梦见了" + params.userInput;
-        case 4: // 海绵宝宝的神奇海螺
+        case 5: // 海绵宝宝的神奇海螺
           return params.userInput;
-        case 5: // 教师教案
+        case 6: // 教师教案
           return "我的主题是：" + params.userInput;
+        case 7: // 旅行计划
+          return params.userInput;
       }
     };
   }
 
   static getPromptSessionMessages(id) {
     switch (id) {
-      case 1: // 周报
+      case 1: // 产品经理（PRD文档）
+        return [
+          {
+            content:
+              "请您作为产品经理回复我。我将会提供一个主题，您将帮助我编写一份包括以下章节标题的PRD文档：概述、目标、用户使用旅程、功能概述、实现逻辑、功能详细描述等。",
+            role: "system",
+          },
+        ];
+      case 2: // 周报
         return [
           {
             content:
@@ -42,7 +54,7 @@ class Prompts {
             role: "assistant",
           },
         ];
-      case 2: // 小红书
+      case 3: // 小红书
         return [
           {
             content:
@@ -50,19 +62,11 @@ class Prompts {
             role: "system",
           },
         ];
-      case 3: // 周公解梦
+      case 4: // 周公解梦
         return [
           {
             content:
               "我希望你能充当一个解梦者。我将给你描述我的梦，而你将根据梦中出现的符号和主题提供解释。不要提供关于梦者的个人意见或假设。只提供基于所给信息的事实性解释。如果认为我的输入不是一个梦境，那你可以拒绝我的请求，让我重新输入",
-            role: "system",
-          },
-        ];
-      case 4: // 海绵宝宝的神奇海螺
-        return [
-          {
-            content:
-              "我想让你充当海绵宝宝的魔力海螺壳。对于我问的每一个问题，你只能用一个词来回答，或者是这些选项中的一个。也许有一天会，我不这么认为，或者再试着问一次。不要对你的答案做任何解释。",
             role: "system",
           },
         ];
@@ -70,7 +74,22 @@ class Prompts {
         return [
           {
             content:
+              "我想让你充当海绵宝宝的魔力海螺壳。对于我问的每一个问题，你只能用一个词来回答，或者是这些选项中的一个。也许有一天会，我不这么认为，或者再试着问一次。不要对你的答案做任何解释。",
+            role: "system",
+          },
+        ];
+      case 6: // 教师教案
+        return [
+          {
+            content:
               "请帮助我编写一份教学案例，我将会提供一个主题，教学案例主要包括以下内容：教学目标，教学重点，教学难点，以及教学方法。",
+            role: "system",
+          },
+        ];
+      case 7: // 旅行计划
+        return [
+          {
+            content: "请帮我制定一份旅行计划，并列出每天的预计开销和注意事项",
             role: "system",
           },
         ];
