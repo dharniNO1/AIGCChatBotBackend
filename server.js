@@ -8,6 +8,10 @@ const prompts = require("./prompts/prompts");
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log("Incoming request body:", req.body);
+  next();
+});
 
 const configuration = new Configuration({
   organization: "org-NB2fABjUp7msXUadrCdWDtv5",
