@@ -7,7 +7,7 @@ const prompts = require("./prompts/prompts");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+
 app.use((req, res, next) => {
   console.log(
     `[${new Date().toISOString()}] Incoming request: ${req.method} ${req.url}`
@@ -79,7 +79,7 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.post("/api/onetimeChat", async (req, res) => {
+app.post("/api/onetimeChat", express.json(), async (req, res) => {
   try {
     const userInput = req.body;
     console.log("User Input: [%s]", userInput);
@@ -113,6 +113,10 @@ app.get("/api/chat-modes", (req, res) => {
 
 app.get("/api/accountConfigs", (req, res) => {
   res.status(200).json(accountConfigs);
+});
+
+app.get("/", (req, res) => {
+  res.status(403).send("Forbidden");
 });
 
 const PORT = process.env.PORT || 8080;
