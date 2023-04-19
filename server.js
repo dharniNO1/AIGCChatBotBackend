@@ -50,8 +50,8 @@ async function handleChat(userInput, sessionMessages, res) {
 // ************************
 app.post("/api/chat", async (req, res) => {
   try {
+    console.log("[/api/chat] User req body: [%s]", req.body);
     const userInput = req.body.userInput.trim();
-    console.log("User Input: [%s]", userInput);
 
     if (userInput === "Test") {
       await new Promise((resolve) => setTimeout(resolve, 3000));
