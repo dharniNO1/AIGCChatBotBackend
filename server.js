@@ -2,8 +2,8 @@ const express = require("express");
 const { Configuration, OpenAIApi } = require("openai");
 const cors = require("cors");
 const { performance } = require("perf_hooks");
-const { chatModes, accountConfigs } = require("./functions/configs/configs");
-const prompts = require("./functions/prompts/prompts");
+const { chatModes, accountConfigs } = require("./configs/configs");
+const prompts = require("./prompts/prompts");
 
 const app = express();
 app.use(cors());
