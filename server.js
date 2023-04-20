@@ -43,7 +43,7 @@ async function handleChat(userInput, sessionMessages, res) {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: sessionMessages,
-    temperature: 0.9,
+    temperature: 0.2,
   });
   console.log(response.data.choices);
   res.json(response.data.choices[0].message.content);

@@ -87,7 +87,7 @@ const chatModes = [
 ];
 
 const accountConfigs = {
-  initialSubmissionCount: 55,
+  initialSubmissionCount: 100,
 };
 
 module.exports = {
