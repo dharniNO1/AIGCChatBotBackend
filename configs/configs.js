@@ -84,6 +84,17 @@ const chatModes = [
     placeholderText: "比如：我想去三亚，只花3000块",
     resultTitle: "你的旅行计划",
   },
+  {
+    id: 8,
+    chatModeInputType: 1,
+    title: "雅思写作考官",
+    description: "模拟考官打分",
+    inputTitle: "你的英文作文",
+    inputSubtitle: "请输入你的雅思作文",
+    warningSubtitle: "别闹，输入你的满分作文！",
+    placeholderText: "比如：Today is Sunday...",
+    resultTitle: "AI对你的文章评分",
+  },
 ];
 
 const accountConfigs = {

@@ -27,6 +27,8 @@ class Prompts {
           return "我的主题是：" + params.userInput;
         case 7: // 旅行计划
           return params.userInput;
+        case 8:
+          return "我的文章是：" + params.userInput;
       }
     };
   }
@@ -90,6 +92,14 @@ class Prompts {
         return [
           {
             content: "请帮我制定一份旅行计划，并列出每天的预计开销和注意事项",
+            role: "system",
+          },
+        ];
+      case 8: // 雅思写作考官
+        return [
+          {
+            content:
+              "我希望你假定自己是雅思写作考官，根据雅思评判标准，按我给你的作文给我评分，并且按照雅思写作评分细则给出打分依据。此外，请给我详细的修改意见并写出满分范文。请依次给到我以下内容：具体分数及其评分依据、文章修改意见、满分范文。",
             role: "system",
           },
         ];
