@@ -1,8 +1,7 @@
 class Prompts {
   static generateUserInput(id) {
     return (params) => {
-      console.log("logging para");
-      console.log(params);
+      console.log(`logging param [${JSON.stringify(params)}]`);
       switch (id) {
         case 1: // 产品经理（PRD文档）
           return "我的需求是：" + params.userInput;
@@ -29,6 +28,8 @@ class Prompts {
           return params.userInput;
         case 8:
           return "我的文章是：" + params.userInput;
+        case 9:
+          return params.userInput;
       }
     };
   }
@@ -100,6 +101,14 @@ class Prompts {
           {
             content:
               "我希望你假定自己是雅思写作考官，根据雅思评判标准，按我给你的作文给我评分，并且按照雅思写作评分细则给出打分依据。此外，请给我详细的修改意见并写出满分范文。请依次给到我以下内容：具体分数及其评分依据、文章修改意见、满分范文。",
+            role: "system",
+          },
+        ];
+      case 9:
+        return [
+          {
+            content:
+              '我今天犯错了，我希望你以一个很好的男朋友的身份，给我的女朋友写一份500字的检讨书。这封信我希望可以表达我的歉意以及我对她和她家人的亏欠。我平时称呼女朋友为"宝宝"或者"老婆"或者"亲爱的"',
             role: "system",
           },
         ];
