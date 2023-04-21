@@ -43,7 +43,7 @@ async function handleChat(userInput, sessionMessages, res) {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: sessionMessages,
-    temperature: 0.2,
+    temperature: 0.5,
   });
   console.log(response.data.choices);
   res.json(response.data.choices[0].message.content);
@@ -58,7 +58,7 @@ async function handleChat(userInput, sessionMessages, res) {
 // ************************
 app.post("/api/chat", async (req, res) => {
   try {
-    console.log("[/api/chat] User req body: [%s]", req.body);
+    console.log(`[/api/chat] User req body: [${JSON.stringify(req.body)}]`);
     const userInput = req.body.userInput.trim();
 
     if (userInput === "Test") {
@@ -82,10 +82,10 @@ app.post("/api/chat", async (req, res) => {
 
 app.post("/api/onetimeChat", async (req, res) => {
   try {
-    const userInput = req.body;
-    console.log("User Input: [%s]", userInput);
+    const reqBody = req.body;
+    console.log(`User Input: [${JSON.stringify(req.body)}]`);
 
-    if (userInput === "Test") {
+    if (reqBody === "Test") {
       await new Promise((resolve) => setTimeout(resolve, 3000));
       res.json(
         "Test 疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试"
@@ -98,10 +98,10 @@ app.post("/api/onetimeChat", async (req, res) => {
       ...prompts.getPromptSessionMessages(chatModeId),
       {
         role: "user",
-        content: prompts.generateUserInput(chatModeId)({ ...userInput }),
+        content: prompts.generateUserInput(chatModeId)({ ...reqBody }),
       },
     ];
-    await handleChat(userInput, sessionMessages, res);
+    await handleChat(reqBody.userInput, sessionMessages, res);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error occurred while processing request.");
