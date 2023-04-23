@@ -38,29 +38,39 @@ async function handleChat(userInput, sessionMessages, res) {
   const cacheKey = JSON.stringify(sessionMessages);
   const cachedResponse = responseCache.get(cacheKey);
 
-  if (cachedResponse) {
+  // For cache hit
+  if (cachedResponse && cachedResponse !== "PROCESSING") {
     console.log("Cache hit. Using cached response.");
     res.json(cachedResponse);
     return;
   }
 
+  // For trying to cache, but still processing
+  if (cachedResponse && cachedResponse === "PROCESSING") {
+    console.log("Still processing last request");
+    res.status(404).json("Still processing last request");
+    return;
+  }
+
+  // otherwise, it's first time caching
+  responseCache.set(cacheKey, "PROCESSING");
+
   const startTime = performance.now();
-  if (userInput === "Test") {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    res.json(
-      "Test 疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试"
-    );
-  } else {
-    const response = await openai.createChatCompletion({
+  const response = await openai
+    .createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: sessionMessages,
       temperature: 0.8,
       top_p: 0.5,
+    })
+    .catch((error) => {
+      // clear cache
+      responseCache.del(cacheKey);
+      console.error(`Error getting response from GPT ${error}`);
     });
-    res.json(response.data.choices[0].message.content);
-    console.log(response.data.choices);
-    responseCache.set(cacheKey, response.data.choices[0].message.content);
-  }
+  res.json(response.data.choices[0].message.content);
+  console.log(response.data.choices);
+  responseCache.set(cacheKey, response.data.choices[0].message.content);
   const endTime = performance.now();
 
   const responseTime = endTime - startTime;
