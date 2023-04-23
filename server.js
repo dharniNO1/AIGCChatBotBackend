@@ -7,16 +7,19 @@ const prompts = require("./prompts/prompts");
 const firestore = require("./configs/firebase-config");
 const firestoreOps = require("./firebaseOperations");
 const { User } = require("./model/User");
+const NodeCache = require("node-cache"); // Import Node-Cache
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+const responseCache = new NodeCache({ stdTTL: 3600 }); // Create a new cache instance with a default TTL of 1 hour
+
 app.use((req, res, next) => {
-  console.log(
+  console.debug(
     `[${new Date().toISOString()}] Incoming request: ${req.method} ${req.url}`
   );
-  console.log("Incoming request body:", req.body);
+  console.debug("Incoming request body:", req.body);
   next();
 });
 
@@ -30,27 +33,34 @@ const openai = new OpenAIApi(configuration);
 // ******  Helpers  *******
 // ************************
 async function handleChat(userInput, sessionMessages, res) {
+  console.error(userInput);
+  console.error(sessionMessages);
+  const cacheKey = JSON.stringify(sessionMessages);
+  const cachedResponse = responseCache.get(cacheKey);
+
+  if (cachedResponse) {
+    console.log("Cache hit. Using cached response.");
+    res.json(cachedResponse);
+    return;
+  }
+
+  const startTime = performance.now();
   if (userInput === "Test") {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     res.json(
       "Test 疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试疯狂测试"
     );
-    return;
+  } else {
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: sessionMessages,
+      temperature: 0.8,
+      top_p: 0.5,
+    });
+    res.json(response.data.choices[0].message.content);
+    console.log(response.data.choices);
+    responseCache.set(cacheKey, response.data.choices[0].message.content);
   }
-
-  console.debug(
-    "[handleChat] sessionMessages: [%s]",
-    JSON.stringify(sessionMessages)
-  );
-  const startTime = performance.now();
-  const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: sessionMessages,
-    temperature: 0.8,
-    top_p: 0.5,
-  });
-  console.log(response.data.choices);
-  res.json(response.data.choices[0].message.content);
   const endTime = performance.now();
 
   const responseTime = endTime - startTime;
@@ -75,6 +85,11 @@ app.post("/api/chat", async (req, res) => {
     const sessionMessages = [
       ...req.body.sessionMessages,
       { role: "user", content: userInput },
+      {
+        role: "system",
+        content:
+          "对于你觉得无法回答的问题，包括政治问题，敏感话题或者问一些你不知道得知识，你就假装哑巴回答，用括号加动作或者用Emoji也可以。但是记住，对于可以回答的问题，请不要用括号加动作。",
+      },
     ];
 
     await handleChat(userInput, sessionMessages, res);
@@ -105,7 +120,7 @@ app.post("/api/onetimeChat", async (req, res) => {
         content: prompts.generateUserInput(chatModeId)({ ...reqBody }),
       },
     ];
-    await handleChat(reqBody.userInput, sessionMessages, res);
+    await handleChat(req.body.userInput, sessionMessages, res);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error occurred while processing request.");

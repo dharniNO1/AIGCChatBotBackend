@@ -1,7 +1,7 @@
 class Prompts {
   static generateUserInput(id) {
     return (params) => {
-      console.log(`logging param [${JSON.stringify(params)}]`);
+      // console.log(`logging param [${JSON.stringify(params)}]`);
       switch (id) {
         case 1: // 产品经理（PRD文档）
           return "我的需求是：" + params.userInput;
