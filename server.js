@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 
 const configuration = new Configuration({
   organization: "org-NB2fABjUp7msXUadrCdWDtv5",
-  apiKey: "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",
+  apiKey: "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",
 });
 const openai = new OpenAIApi(configuration);
 
@@ -38,20 +38,21 @@ async function handleChat(userInput, sessionMessages, res) {
     return;
   }
 
-  const startTime = performance.now();
   console.debug(
     "[handleChat] sessionMessages: [%s]",
     JSON.stringify(sessionMessages)
   );
+  const startTime = performance.now();
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: sessionMessages,
-    temperature: 0.5,
+    temperature: 0.8,
+    top_p: 0.5,
   });
   console.log(response.data.choices);
   res.json(response.data.choices[0].message.content);
-
   const endTime = performance.now();
+
   const responseTime = endTime - startTime;
   console.log(`[handleChat] API response time: ${responseTime.toFixed(2)} ms`);
 }
