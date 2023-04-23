@@ -110,6 +110,8 @@ const chatModes = [
 
 const accountConfigs = {
   initialSubmissionCount: 100,
+  initialExpiryDate: null,
+  initialIsVIP: false,
 };
 
 module.exports = {

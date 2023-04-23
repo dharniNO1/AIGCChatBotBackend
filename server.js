@@ -4,6 +4,9 @@ const cors = require("cors");
 const { performance } = require("perf_hooks");
 const { chatModes, accountConfigs } = require("./configs/configs");
 const prompts = require("./prompts/prompts");
+const firestore = require("./firebase-config");
+const firestoreOps = require("./firebaseOperations");
+const { User } = require("./model/User");
 
 const app = express();
 app.use(cors());
@@ -105,6 +108,76 @@ app.post("/api/onetimeChat", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error occurred while processing request.");
+  }
+});
+
+app.post("/api/initializeUserInfo", async (req, res) => {
+  /*
+   * {
+   *   "uid": "9AXhkidXdWbEq8nNROVE",
+   *   "email" : "email@emil.com",
+   *   "expiryDate" : 12321321,
+   *   "isVIP": false,
+   *   "submissionCount" : 999
+   * }
+   */
+  const uid = req.body.uid;
+  const email = req.body.email;
+  const userInstance = new User(
+    uid,
+    email,
+    accountConfigs.initialExpiryDate,
+    accountConfigs.initialIsVIP,
+    accountConfigs.initialSubmissionCount
+  );
+
+  const as = await firestoreOps
+    .addUser(firestore, userInstance.toObject())
+    .then((user) => {
+      res.status(200).json({
+        user,
+      });
+    })
+    .catch(() => {
+      res.status(500);
+    });
+  console.log(as);
+});
+
+app.post("/api/decrementUserSubmissionCount", async (req, res) => {
+  /*
+   * {
+   *   "uid": "9AXhkidXdWbEq8nNROVE"
+   * }
+   */
+  const uid = req.body.uid;
+
+  await firestoreOps
+    .updateUserSubmissionCount(firestore, uid)
+    .then((user) => {
+      res.status(200).json({
+        user,
+      });
+    })
+    .catch(() => {
+      res.status(500);
+    });
+});
+
+app.get("/api/queryUserInfo", async (req, res) => {
+  /*
+   * {
+   *   "uid": "9AXhkidXdWbEq8nNROVE"
+   * }
+   */
+  const uid = req.query.uid;
+
+  const userInfo = await firestoreOps.getUserInfo(firestore, uid);
+
+  if (userInfo) {
+    res.status(200).json(userInfo);
+  } else {
+    res.status(404).json({ error: "User not found" });
   }
 });
 
