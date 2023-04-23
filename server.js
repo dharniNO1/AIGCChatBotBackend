@@ -4,7 +4,7 @@ const cors = require("cors");
 const { performance } = require("perf_hooks");
 const { chatModes, accountConfigs } = require("./configs/configs");
 const prompts = require("./prompts/prompts");
-const firestore = require("./firebase-config");
+const firestore = require("./configs/firebase-config");
 const firestoreOps = require("./firebaseOperations");
 const { User } = require("./model/User");
 

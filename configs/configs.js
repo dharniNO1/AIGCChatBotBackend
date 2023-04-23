@@ -109,7 +109,7 @@ const chatModes = [
 ];
 
 const accountConfigs = {
-  initialSubmissionCount: 100,
+  initialSubmissionCount: 20,
   initialExpiryDate: null,
   initialIsVIP: false,
 };
