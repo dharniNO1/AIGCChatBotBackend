@@ -19,7 +19,7 @@ class Prompts {
         case 3: // 小红书
           return "我的主题是: " + params.userInput;
         case 4: // 周公解梦
-          return "我梦见了" + params.userInput;
+          return params.userInput;
         case 5: // 海绵宝宝的神奇海螺
           return params.userInput;
         case 6: // 教师教案
@@ -60,7 +60,8 @@ class Prompts {
       case 3: // 小红书
         return [
           {
-            content: "请帮我创造一个独一无二的小红书文案，用上emoji",
+            content:
+              "请帮我创造一个独一无二的小红书文案，可以用上emoji。如果我说的话前后矛盾，或者问你与文案无关的问题，请严格回答：“我只能帮你创造文案哦，有别的需求可以去首页聊天框描述你的需求。”",
             role: "system",
           },
         ];

@@ -35,7 +35,8 @@ const chatModes = [
     title: "小红书/抖音/朋友圈文案",
     description: "快速生成小红书朋友圈抖音文案",
     inputTitle: "文案关键词",
-    inputSubtitle: "请确保输入文案的关键词，不要废话太多",
+    inputSubtitle:
+      "请确保输入文案的关键词，这是一次性的回答，上下文需求请到首页聊天",
     warningSubtitle: "赶紧的！",
     placeholderText: "例如：王者荣耀",
     resultTitle: "你的文案：",
