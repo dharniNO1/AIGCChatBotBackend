@@ -93,13 +93,13 @@ app.post("/api/chat", async (req, res) => {
       return;
     }
     const sessionMessages = [
-      ...req.body.sessionMessages,
-      { role: "user", content: userInput },
       {
         role: "system",
         content:
           "对于你觉得无法回答的问题，包括政治问题，敏感话题或者问一些你不知道得知识，你就假装哑巴回答，用括号加动作或者用Emoji也可以。但是记住，对于可以回答的问题，请不要用括号加动作。",
       },
+      ...req.body.sessionMessages,
+      { role: "user", content: userInput },
     ];
 
     await handleChat(userInput, sessionMessages, res);
