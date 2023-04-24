@@ -49,7 +49,7 @@ const chatModes = [
     inputTitle: "您昨晚梦到了什么？",
     inputSubtitle: "请确保您的梦境描述在100字内",
     warningSubtitle: "别闹，请输入解梦内容",
-    placeholderText: "比如：我昨天梦见在北京蹦迪",
+    placeholderText: "比如：梦见在北京蹦迪",
     resultTitle: "AI对你的梦是这么理解的：",
   },
   // {
