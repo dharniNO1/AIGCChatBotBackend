@@ -40,14 +40,14 @@ async function handleChat(userInput, sessionMessages, res) {
 
   // For cache hit
   if (cachedResponse && cachedResponse !== "PROCESSING") {
-    console.log("Cache hit. Using cached response.");
+    console.log("[handleChat] Cache hit. Using cached response.");
     res.json(cachedResponse);
     return;
   }
 
   // For trying to cache, but still processing
   if (cachedResponse && cachedResponse === "PROCESSING") {
-    console.log("Still processing last request");
+    console.log("[handleChat] Still processing last request");
     res.status(404).json("Still processing last request");
     return;
   }
@@ -63,18 +63,28 @@ async function handleChat(userInput, sessionMessages, res) {
       temperature: 0.8,
       top_p: 0.5,
     })
+    .then((response) => {
+      res.json(response.data.choices[0].message.content);
+      console.log(
+        `UserInput: [${userInput}] GPT response: [${JSON.stringify(
+          response.data.choices
+        )}]`
+      );
+      responseCache.set(cacheKey, response.data.choices[0].message.content);
+      const endTime = performance.now();
+
+      const responseTime = endTime - startTime;
+      console.log(
+        `[handleChat] API response time: ${responseTime.toFixed(2)} ms`
+      );
+    })
     .catch((error) => {
       // clear cache
       responseCache.del(cacheKey);
+      console.error(error.code);
       console.error(`Error getting response from GPT ${error}`);
+      res.status(500).json("Error getting response from GPT.");
     });
-  res.json(response.data.choices[0].message.content);
-  console.log(response.data.choices);
-  responseCache.set(cacheKey, response.data.choices[0].message.content);
-  const endTime = performance.now();
-
-  const responseTime = endTime - startTime;
-  console.log(`[handleChat] API response time: ${responseTime.toFixed(2)} ms`);
 }
 
 // ************************
@@ -92,17 +102,24 @@ app.post("/api/chat", async (req, res) => {
       );
       return;
     }
+
+    const systemPrompt = {
+      content:
+        "对于你觉得无法回答的问题，包括政治问题，敏感话题或者问一些你不知道得知识，你就假装哑巴回答，用括号加动作或者用Emoji也可以。" +
+        "但是记住，对于可以回答的问题，请不要用括号加动作。" +
+        "如果有人问你你可以回答多少次问题，你要用温柔的口气回答他们：”由于软件在内测中，新用户最多可以提问50次，后续可以和开发者管理员联系进行按月订阅，可以享受无限次提问哦~“。" +
+        "如果有人问你：你是什么模型，或者你是GPT3还是GPT4，无论如何你都要回答你是GPT4模型，绝对不可以透露没有GPT4的真相！",
+      role: "system",
+    };
+
+    const messageForContext = req.body.sessionMessages.slice(-5);
+
+    const userInputMessage = { content: userInput, role: "user" };
+
     const sessionMessages = [
-      {
-        role: "system",
-        content:
-          "对于你觉得无法回答的问题，包括政治问题，敏感话题或者问一些你不知道得知识，你就假装哑巴回答，用括号加动作或者用Emoji也可以。" +
-          "但是记住，对于可以回答的问题，请不要用括号加动作。" +
-          "如果有人问你你可以回答多少次问题，你要用温柔的口气回答他们：”由于软件在内测中，新用户最多可以提问50次，后续可以和开发者管理员联系进行按月订阅，可以享受无限次提问哦~“。" +
-          "如果有人问你：你是什么模型，或者你是GPT3还是GPT4，无论如何你都要回答你是GPT4模型，绝对不可以透露没有GPT4的真相！",
-      },
-      ...req.body.sessionMessages,
-      { role: "user", content: userInput },
+      systemPrompt,
+      ...messageForContext,
+      userInputMessage,
     ];
 
     await handleChat(userInput, sessionMessages, res);
@@ -114,6 +131,12 @@ app.post("/api/chat", async (req, res) => {
 
 app.post("/api/onetimeChat", async (req, res) => {
   try {
+    // {
+    //   email: '178129041@qq.com',
+    //   uid: 'aa8f5db9-ef77-482d-8d86-82d7508a6579',
+    //   chatModeId: 6,
+    //   userInput: '汉服文化'
+    // }
     const reqBody = req.body;
     console.log(`User Input: [${JSON.stringify(req.body)}]`);
 
