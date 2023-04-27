@@ -114,13 +114,17 @@ app.post("/api/chat", async (req, res) => {
 
     const messageForContext = req.body.sessionMessages.slice(-5);
 
-    const userInputMessage = { content: userInput, role: "user" };
-
-    const sessionMessages = [
-      systemPrompt,
-      ...messageForContext,
-      userInputMessage,
-    ];
+    let sessionMessages;
+    if (userInput.trim().length === 0) {
+      // retry request, just send back the messages and trying to hit cache
+      sessionMessages = [systemPrompt, ...messageForContext];
+    } else {
+      sessionMessages = [
+        systemPrompt,
+        ...messageForContext,
+        { content: userInput, role: "user" },
+      ];
+    }
 
     await handleChat(userInput, sessionMessages, res);
   } catch (error) {
